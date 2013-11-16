@@ -20,6 +20,6 @@ const query_create_groups = `
 `
 
 func (db GroupOps) createTable() error {
-    _, err := db.Exec(query_create_groups)
+    _, err := db.db.Exec(query_create_groups)
     return err
 }

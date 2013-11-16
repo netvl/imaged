@@ -1,5 +1,9 @@
 package database
 
+import (
+    log "github.com/cihub/seelog"
+)
+
 const (
     query_create_files_tags_map = `
         create table files_tags_map (
@@ -33,11 +37,18 @@ const (
 )
 
 func (db *Database) establishKeys() error {
-    _, err := db.Exec(query_create_files_tags_map)
+    log.Debug("Creating files-tags mapping table")
+    _, err := db.db.Exec(query_create_files_tags_map)
     if err != nil {
+        log.Debugf("Failed: %s", err)
         return err
     }
 
-    _, err = db.Exec(query_create_files_groups_map)
+    log.Debug("Creating files-groups mapping table")
+    _, err = db.db.Exec(query_create_files_groups_map)
+    if err != nil {
+        log.Debugf("Failed: %s", err)
+    }
+
     return err
 }

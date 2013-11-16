@@ -10,7 +10,7 @@ import (
 )
 
 type Database struct {
-    *sqlx.DB
+    db *sqlx.DB
 }
 
 func Initialize(conf *config.Config) (*Database, error) {
@@ -54,17 +54,30 @@ func checkDatabaseExists(databaseFile string) (bool, error) {
 }
 
 func (db *Database) createTables() error {
+    log.Debug("Creating tags table")
     if err := db.Tags().createTable(); err != nil {
+        log.Debugf("Failed: %s", err)
         return err
     }
 
+    log.Debug("Creating files table")
     if err := db.Files().createTable(); err != nil {
+        log.Debugf("Failed: %s", err)
         return err
     }
 
+    log.Debug("Creating groups table")
     if err := db.Groups().createTable(); err != nil {
+        log.Debugf("Failed: %s", err)
         return err
     }
 
     return db.establishKeys()
+}
+
+func (db *Database) Close() {
+    err := db.db.Close()
+    if err != nil {
+        log.Warnf("Error closing database: %?", err)
+    }
 }

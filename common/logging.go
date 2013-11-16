@@ -20,6 +20,10 @@ const (
             </outputs>
         </seelog>
     `
+
+    DEFAULT_DISABLE_LOGS_CONFIG = `
+        <seelog type="sync" levels="off" />
+    `
 )
 
 func InitDefaultLogConfig() {
@@ -32,6 +36,14 @@ func InitDefaultLogConfig() {
 
 func InitDefaultSyncLogConfig() {
     logger, err := log.LoggerFromConfigAsString(DEFAULT_SYNC_LOG_CONFIG)
+    if err != nil {
+        panic(err)
+    }
+    log.ReplaceLogger(logger)
+}
+
+func DisableLogs() {
+    logger, err := log.LoggerFromConfigAsString(DEFAULT_DISABLE_LOGS_CONFIG)
     if err != nil {
         panic(err)
     }

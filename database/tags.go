@@ -23,7 +23,7 @@ const query_create_tags = `
 `
 
 func (db TagOps) createTable() error {
-    _, err := db.Exec(query_create_tags)
+    _, err := db.db.Exec(query_create_tags)
     return err
 }
 
@@ -32,7 +32,7 @@ const query_find_tag_by_id = `
 `
 
 func (db TagOps) FindById(id int64) (tag data.Tag, err error) {
-    err = db.Select(&tag, query_find_tag_by_id, id)
+    err = db.db.Select(&tag, query_find_tag_by_id, id)
     return
 }
 
@@ -41,6 +41,6 @@ const query_save_tag = `
 `
 
 func (db TagOps) Save(tag data.Tag) error {
-    _, err := db.Exec(query_save_tag, tag.Name, tag.Description, tag.Type)
+    _, err := db.db.Exec(query_save_tag, tag.Name, tag.Description, tag.Type)
     return err
 }

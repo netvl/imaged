@@ -1,6 +1,7 @@
 package database
 
 import (
+    "github.com/dpx-infinity/imaged/common"
     . "github.com/smartystreets/goconvey/convey"
     "os"
     "path/filepath"
@@ -8,8 +9,9 @@ import (
 )
 
 func TestInit(t *testing.T) {
+    common.DisableLogs()
+
     tempfile := filepath.Join(os.TempDir(), "imaged_test.sqlite")
-    println(tempfile)
 
     Convey("Database file should be properly initialized", t, func() {
         os.Remove(tempfile)

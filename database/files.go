@@ -23,6 +23,6 @@ const query_create_files = `
 `
 
 func (db FileOps) createTable() error {
-    _, err := db.Exec(query_create_files)
+    _, err := db.db.Exec(query_create_files)
     return err
 }
