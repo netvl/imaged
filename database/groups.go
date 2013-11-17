@@ -1,5 +1,9 @@
 package database
 
+import (
+    log "github.com/cihub/seelog"
+)
+
 type GroupOps struct {
     *Database
 }
@@ -20,6 +24,7 @@ const query_create_groups = `
 `
 
 func (db GroupOps) createTable() error {
+    log.Debug("Creating groups table")
     _, err := db.db.Exec(query_create_groups)
     return err
 }

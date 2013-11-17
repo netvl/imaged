@@ -1,6 +1,7 @@
 package database
 
 import (
+    log "github.com/cihub/seelog"
     "github.com/dpx-infinity/imaged/data"
     _ "github.com/jmoiron/sqlx"
 )
@@ -23,24 +24,20 @@ const query_create_tags = `
 `
 
 func (db TagOps) createTable() error {
+    log.Debug("Creating tags table")
     _, err := db.db.Exec(query_create_tags)
     return err
 }
 
-const query_find_tag_by_id = `
-    select * from tags where tag_id = ?
-`
+func (db TagOps) prepareTable() {
+    db.db.AddTable(data.Tag{}, "tags").SetKeys(true, "tag_id")
+}
 
 func (db TagOps) FindById(id int64) (tag data.Tag, err error) {
-    err = db.db.Select(&tag, query_find_tag_by_id, id)
+    err = db.db.Get(&tag, id)
     return
 }
 
-const query_save_tag = `
-    insert into tags (name, description, type) values (?, ?, ?)
-`
-
-func (db TagOps) Save(tag data.Tag) error {
-    _, err := db.db.Exec(query_save_tag, tag.Name, tag.Description, tag.Type)
-    return err
+func (db TagOps) Insert(tag *data.Tag) error {
+    return db.db.Insert(tag)
 }

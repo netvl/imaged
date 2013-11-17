@@ -1,5 +1,9 @@
 package database
 
+import (
+    log "github.com/cihub/seelog"
+)
+
 type FileOps struct {
     *Database
 }
@@ -23,6 +27,7 @@ const query_create_files = `
 `
 
 func (db FileOps) createTable() error {
+    log.Debug("Creating files table")
     _, err := db.db.Exec(query_create_files)
     return err
 }

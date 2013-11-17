@@ -21,13 +21,14 @@ type File struct {
     IsFavorite   bool      `db:"is_favorite"`
 }
 
-type GroupMapping struct {
-    GroupId int64 `db:"group_id"`
-    Indices []string
-}
-
 type Group struct {
     Id          int64         `db:"group_id"`
     TitleFileId sql.NullInt64 `db:"title_file_id"`
     Name        string
+}
+
+type FileGroupMapping struct {
+    FileId  int64 `db:"file_id"`
+    GroupId int64 `db:"group_id"`
+    Indices string
 }

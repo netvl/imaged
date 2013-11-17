@@ -1,16 +1,17 @@
 package database
 
 import (
+    "database/sql"
     log "github.com/cihub/seelog"
     "github.com/dpx-infinity/imaged/common"
     "github.com/dpx-infinity/imaged/config"
-    "github.com/jmoiron/sqlx"
+    "github.com/jmoiron/modl"
     _ "github.com/mattn/go-sqlite3"
     "os"
 )
 
 type Database struct {
-    db *sqlx.DB
+    db *modl.DbMap
 }
 
 func Initialize(conf *config.Config) (*Database, error) {
@@ -23,12 +24,13 @@ func InitializeWithPath(databaseFile string) (*Database, error) {
         return nil, common.NewError("Cannot access database file", err)
     }
 
-    db, err := sqlx.Open("sqlite3", databaseFile)
+    db, err := sql.Open("sqlite3", databaseFile)
     if err != nil {
         return nil, common.NewError("Cannot open database", err)
     }
+    dbmap := modl.NewDbMap(db, modl.SqliteDialect{})
 
-    database := &Database{db}
+    database := &Database{dbmap}
 
     if !dbExists {
         log.Info("Creating tables")
@@ -36,6 +38,8 @@ func InitializeWithPath(databaseFile string) (*Database, error) {
             return nil, common.NewError("Cannot create tables", err)
         }
     }
+
+    database.prepareTables()
 
     return database, nil
 }
@@ -53,20 +57,21 @@ func checkDatabaseExists(databaseFile string) (bool, error) {
     return true, nil
 }
 
+func (db *Database) prepareTables() {
+    db.Tags().prepareTable()
+}
+
 func (db *Database) createTables() error {
-    log.Debug("Creating tags table")
     if err := db.Tags().createTable(); err != nil {
         log.Debugf("Failed: %s", err)
         return err
     }
 
-    log.Debug("Creating files table")
     if err := db.Files().createTable(); err != nil {
         log.Debugf("Failed: %s", err)
         return err
     }
 
-    log.Debug("Creating groups table")
     if err := db.Groups().createTable(); err != nil {
         log.Debugf("Failed: %s", err)
         return err
@@ -76,7 +81,7 @@ func (db *Database) createTables() error {
 }
 
 func (db *Database) Close() {
-    err := db.db.Close()
+    err := db.db.Db.Close()
     if err != nil {
         log.Warnf("Error closing database: %?", err)
     }
